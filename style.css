@@ -1,3 +1,4 @@
+@import url(https://fonts.googleapis.com/css?family=Sniglet:regular);
 /*
   Josh's Custom CSS Reset
   https://www.joshwcomeau.com/css/custom-css-reset/
@@ -46,16 +47,60 @@ h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 body{
+    font-family: "Sniglet";
     height: 100vh;
-
     display: flex;
     justify-content: center;
     align-items: center;
 }
+.container{
+    width: 70%;
+    height: 70%;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-rows: 1fr 3fr;
 
+    justify-items: center;
+    align-items: center;
+
+    grid-template-areas: 
+    "result result result"
+    "player1 board player2";
+    gap: 20px;
+}
+.result-container{
+    grid-area: result;
+    height: 200px;
+    width: 600px;
+    text-align: center;
+    font-size: 70px;
+    background-color: aliceblue;
+    border: 1px solid black;
+    border-radius: 16px;
+}
 .game-grid{
+    grid-area: board;
     display: grid;
     grid-template-columns: repeat(3, 200px);
+    grid-template-rows: repeat(3, 200px);
+}
+
+.player1{
+    grid-area: player1;
+    height: 600px;
+    width: 250px;
+    border: 1px solid black;
+    border-radius: 16px;
+    background-color: antiquewhite;
+}
+
+.player2{
+    grid-area: player2;
+    height: 600px;
+    width: 250px;
+    border: 1px solid black;
+    border-radius: 16px;
+    background-color: antiquewhite;
 }
 
 .cell{
@@ -69,7 +114,12 @@ body{
     background-color: antiquewhite;
     border: 1px solid black;
 
-    font-size: 60px;
+    font-size: 70px;
 
     cursor: pointer;
+    outline: none;
+    transition: all 0.5s;
+}
+.cell:hover{
+    border-radius: 40%;
 }

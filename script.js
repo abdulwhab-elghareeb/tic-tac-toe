@@ -26,14 +26,19 @@ const gameController = (() => {
 
     let GameIsEnded = false;
 
+    let result = "";
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
+
 
     let activePlayer = player1;
 
     const switchActivePlayer = () =>{
         activePlayer = (activePlayer === player1)? player2 : player1;
     };
+    const getResult = () => result;
+
+    const getActivePlayer = () => activePlayer
 
     const checkForWinner = () => {
         const boardCols = gameBoard.getAllCols();
@@ -51,11 +56,12 @@ const gameController = (() => {
            ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
            {
                GameIsEnded = true;
-                return (numberOfXs > numberOfOs)? `${player1.name} wins` : `${player2.name} wins`;
+                return (numberOfXs > numberOfOs)?
+                result = `${player1.name} wins` : result = `${player2.name} wins`;
 
            }else if(numberOfOs + numberOfXs === flatBoard.length){
                 GameIsEnded = true;
-                return "Tie";
+                result = "Tie";
            }; 
     };
 
@@ -68,15 +74,28 @@ const gameController = (() => {
         }
     }
 
-    return {playATurn};
+    return {playATurn, checkForWinner, getActivePlayer, getResult};
 })();
 
 const displayController = (() => {
-    board = gameBoard.getGameBoard()
+    const board = gameBoard.getGameBoard()
+
+    const displayText = (()=>{
+        const resultContainer = document.querySelector(".result-container")
+
+        const result = document.createElement("div")
+        result.classList.add("result")
+        resultContainer.appendChild(result)
+
+        const updateResultText = () => {
+            result.textContent = gameController.getResult()
+        }
+        
+        return {updateResultText}
+    })()
 
     const renderBoard = (() =>{
-        const gameGrid = document.createElement("div");
-        gameGrid.classList.add("game-grid");
+        const gameGrid = document.querySelector(".game-grid");
         
         board.forEach((row, rowIdx) => board[rowIdx].forEach((col, colIdx) =>{
             const cellBtn = document.createElement("button")
@@ -87,13 +106,10 @@ const displayController = (() => {
 
             gameGrid.appendChild(cellBtn)
         }))
-
-        document.querySelector("body").appendChild(gameGrid)
     })()
 
     const addListeners = (() =>{
         const cells = document.querySelectorAll(".cell")
-        
             cells.forEach((cell) => {
                 cell.addEventListener("click", (e) =>{
                     targetRow = e.target.getAttribute("data-row")
@@ -101,10 +117,9 @@ const displayController = (() => {
                     
                     gameController.playATurn(targetRow, targetCol)
                     cell.textContent = board[targetRow][targetCol]
+                    displayText.updateResultText()
                 })
             })
     })()
-
-    
 })();
 
