@@ -5,13 +5,13 @@ const GameBoard = (() =>{
                      // making the gameBoard's 2d array
 
     const getGameBoard = () => gameBoard;
-    const getCol = (colNumber) => [gameBoard[0][colNumber], gameBoard[1][colNumber], gameBoard[2][colNumber]];
+    const getCol = (colNumber) => gameBoard.map((row,rowIdx) => gameBoard[rowIdx][colNumber]);
     const getAllCols = () => [getCol(0), getCol(1), getCol(2)];
     
     const markACell = (row, col, playerMark) => {(gameBoard[row][col])? console.log("Invalid Place") : gameBoard[row][col] = playerMark};
 
     return {getGameBoard, markACell, getCol, getAllCols};
-})()
+})();
 
 const createPlayer = (playerName, playerMarker) =>{
     let name = playerName;
@@ -29,7 +29,7 @@ const GameControl = (() => {
 
     const switchActivePlayer = () =>{
         activePlayer = (activePlayer === player1)? player2 : player1;
-    } // switch between players
+    }; // switch between players
 
     const checkForWinner = () => {
         const board = GameBoard.getGameBoard();
@@ -38,30 +38,31 @@ const GameControl = (() => {
         const numberOfXs = board.flat().filter((cell) => cell == "X").length; // converting the array to 1D and getting the number of "X"s
         const numberOfOs = board.flat().filter((cell) => cell == "O").length; // the same thing but for "O"s
 
-        const diagonalLines = [[board[0][2], board[1][1], board[2][0]], [board[0][0], board[1][1], board[2][2]]] 
+        // 1- if all the cells of a single row or column are "X" or "O" (horizontal or vertical line)
+        // -2 if every cell on the same column as the row number contains "X" or "Y" (i.e., [1][1], [2][2], [3][3])(diagonal line)
+        if ( (board.some( (row) => row.every( (cell) => cell == "X" ) || row.every( (cell) => cell == "O" ) )) ||
+           (boardCols.some( (col) => col.every( (cell) => cell == "X" ) || col.every( (cell) => cell == "O" ) ))  ||
 
-        if ( (board.some( (row) => row.every( (cell) => cell == "X" ) || row.every( (cell) => cell == "O" ) )) || // horizontal line  
-           (boardCols.some( (col) => col.every( (cell) => cell == "X" ) || col.every( (cell) => cell == "O" ) ))  || // vertical line
-
-           ( (diagonalLines[0].every((cell) => cell == "X")) || (diagonalLines[0].every((cell) => cell == "O")) ) || // diagonal line from right side
-           ( (diagonalLines[1].every((cell) => cell == "X")) || (diagonalLines[1].every((cell) => cell == "O")) ) )// diagonal line from left side
+           ( (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "X")) || (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "O")) ) || 
+           ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
            { 
+               // X > O means X wins
+               // X <= O means O wins (actually O cannot be bigger than X, because X always starts first)
                 return (numberOfXs > numberOfOs)? `${player1.name} wins` : `${player2.name} wins`;
-                 // X > O means X wins
-                 // X <= O means O wins (actually O cannot be bigger than X, because X always starts first)
-           }else if(numberOfOs + numberOfXs === 9){// if there is no empty spaces left
-                return "Tie"
-           }      
-    }
+
+           }else if(numberOfOs + numberOfXs === board.length){// if there is no empty spaces left
+                return "Tie";
+           }; 
+    };
 
     const playATurn = (row, col) => {
         GameBoard.markACell(row, col, activePlayer.marker);
-        console.log(GameBoard.getGameBoard())
-        
+        console.log(GameBoard.getGameBoard());
+
         switchActivePlayer();
-        console.log(checkForWinner())
+        console.log(checkForWinner());
         console.log(`It's now ${activePlayer.name}'s turn`); 
     }
 
-    return {playATurn}; // returning only playATurn, because this the only method we will interact with
+    return {playATurn};
 })();
