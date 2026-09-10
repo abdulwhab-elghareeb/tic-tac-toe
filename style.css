@@ -86,21 +86,31 @@ body{
 }
 
 .player1{
+    display: grid;
+    padding: 10px;
+    gap: 10px;
+    justify-items: center;
     grid-area: player1;
     height: 600px;
-    width: 250px;
+    width: 340px;
     border: 1px solid black;
+    font-size: 40px;
     border-radius: 16px;
-    background-color: antiquewhite;
+    background-color: hsl(0, 98%, 82%);
 }
 
 .player2{
+    display: grid;
+    padding: 10px;
+    gap: 10px;
+    justify-items: center;
     grid-area: player2;
     height: 600px;
-    width: 250px;
+    width: 340px;
     border: 1px solid black;
     border-radius: 16px;
-    background-color: antiquewhite;
+    font-size: 40px;
+    background-color: hsl(60, 88%, 91%);
 }
 
 .cell{

@@ -29,6 +29,11 @@ const gameController = (() => {
     let result = "";
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
+    
+    const setPlayer1Name = (newName) => {player1.name = newName;}
+    const getPlayer1Name = () => player1.name;
+    const setPlayer2Name = (newName) => {player2.name = newName;}
+    const getPlayer2Name = () => player2.name;
 
 
     let activePlayer = player1;
@@ -74,7 +79,7 @@ const gameController = (() => {
         }
     }
 
-    return {playATurn, checkForWinner, getActivePlayer, getResult};
+    return {playATurn, checkForWinner, getActivePlayer, getResult, setPlayer1Name, getPlayer1Name, setPlayer2Name, getPlayer2Name};
 })();
 
 const displayController = (() => {
@@ -120,6 +125,23 @@ const displayController = (() => {
                     displayText.updateResultText()
                 })
             })
+    })()
+
+    const displayPlayers = (() =>{
+        const player1Container = document.querySelector(".player1")
+        const player2Container = document.querySelector(".player2")
+
+        const player1NameDisplay = document.createElement("div")
+        player1NameDisplay.classList.add("player1-name")
+        player1NameDisplay.textContent = gameController.getPlayer1Name();
+
+        const player2NameDisplay = document.createElement("div")
+        player2NameDisplay.classList.add("player2-name")
+        player2NameDisplay.textContent = gameController.getPlayer2Name()
+
+
+        player1Container.append(player1NameDisplay)
+        player2Container.append(player2NameDisplay)
     })()
 })();
 
