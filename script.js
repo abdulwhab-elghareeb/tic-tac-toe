@@ -1,3 +1,4 @@
+
 const gameBoard = (() =>{ 
     const gameArray = [["", "", ""],
                        ["", "", ""], 
@@ -8,10 +9,14 @@ const gameBoard = (() =>{
 
     const getCol = (colNumber) => gameArray.map((row,rowIdx) => gameArray[rowIdx][colNumber]);
     const getAllCols = () => [getCol(0), getCol(1), getCol(2)];
+
+    const resetBoard = () => gameArray.forEach((row,rowIdx) => row.forEach((col, colIdx) => {
+        gameArray[rowIdx][colIdx] = ""
+    }))
     
     const markACell = (row, col, playerMark) => (gameArray[row][col])? false : gameArray[row][col] = playerMark;
 
-    return {getGameBoard, getFlatGameBoard, getAllCols, markACell, };
+    return {getGameBoard, getFlatGameBoard, getAllCols, markACell, resetBoard};
 })();
 
 const createPlayer = (playerName, playerMarker) =>{
@@ -24,24 +29,22 @@ const createPlayer = (playerName, playerMarker) =>{
 const gameController = (() => {
     const board = gameBoard.getGameBoard();
 
-    let GameIsEnded = false;
+    let gameIsEnded = false;
 
     let result = "";
+    const getResult = () => result;
+
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
-    
     const setPlayer1Name = (newName) => {player1.name = newName;}
     const getPlayer1Name = () => player1.name;
     const setPlayer2Name = (newName) => {player2.name = newName;}
     const getPlayer2Name = () => player2.name;
 
-
     let activePlayer = player1;
-
     const switchActivePlayer = () =>{
         activePlayer = (activePlayer === player1)? player2 : player1;
     };
-    const getResult = () => result;
 
     const getActivePlayer = () => activePlayer
 
@@ -60,46 +63,45 @@ const gameController = (() => {
            ( (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "X")) || (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "O")) ) || 
            ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
            {
-               GameIsEnded = true;
+               gameIsEnded = true;
                 return (numberOfXs > numberOfOs)?
                 result = `${player1.name} wins` : result = `${player2.name} wins`;
 
            }else if(numberOfOs + numberOfXs === flatBoard.length){
-                GameIsEnded = true;
+                gameIsEnded = true;
                 result = "Tie";
-           }; 
+
+           }
     };
 
     const playATurn = (row, col) => {
-        if (GameIsEnded) return "The Game Ended"
-
+        if (gameIsEnded) return "The Game Ended"
+        
         if (gameBoard.markACell(+row, +col, activePlayer.marker)){// if it's not an invalid spot
             switchActivePlayer();
             checkForWinner();
         }
     }
 
-    return {playATurn, checkForWinner, getActivePlayer, getResult, setPlayer1Name, getPlayer1Name, setPlayer2Name, getPlayer2Name};
+    const resetGame = () => {
+        gameIsEnded = false;
+        activePlayer = player1;
+        gameBoard.resetBoard()
+        result = ""
+    }
+
+    return {playATurn, resetGame, checkForWinner, getActivePlayer, getResult, setPlayer1Name, getPlayer1Name, setPlayer2Name, getPlayer2Name};
 })();
 
 const displayController = (() => {
     const board = gameBoard.getGameBoard()
 
-    const displayText = (()=>{
-        const resultContainer = document.querySelector(".result-container")
-
-        const result = document.createElement("div")
-        result.classList.add("result")
-        resultContainer.appendChild(result)
-
-        const updateResultText = () => {
-            result.textContent = gameController.getResult()
-        }
-        
-        return {updateResultText}
-    })()
-
-    const renderBoard = (() =>{
+    function updateResultText(){
+        const result = document.querySelector(".result")
+        result.textContent = gameController.getResult()
+    }
+    
+    function renderBoard(){
         const gameGrid = document.querySelector(".game-grid");
         
         board.forEach((row, rowIdx) => board[rowIdx].forEach((col, colIdx) =>{
@@ -107,27 +109,19 @@ const displayController = (() => {
             cellBtn.classList.add("cell")
             cellBtn.setAttribute("data-col", colIdx)
             cellBtn.setAttribute("data-row", rowIdx)
-            console.log(rowIdx, colIdx)
 
             gameGrid.appendChild(cellBtn)
         }))
-    })()
+    }
 
-    const addListeners = (() =>{
-        const cells = document.querySelectorAll(".cell")
-            cells.forEach((cell) => {
-                cell.addEventListener("click", (e) =>{
-                    targetRow = e.target.getAttribute("data-row")
-                    targetCol = e.target.getAttribute("data-col")
-                    
-                    gameController.playATurn(targetRow, targetCol)
-                    cell.textContent = board[targetRow][targetCol]
-                    displayText.updateResultText()
-                })
-            })
-    })()
+    function updateDisplayedBoard(){
+        const cells = Array.from(document.querySelectorAll(".cell"))
+        cells.forEach((cell) =>{
+            cell.textContent = board[cell.getAttribute("data-row")][cell.getAttribute("data-col")]
+        })
+    }
 
-    const displayPlayers = (() =>{
+    function displayPlayers(){
         const player1Container = document.querySelector(".player1")
         const player2Container = document.querySelector(".player2")
 
@@ -142,6 +136,32 @@ const displayController = (() => {
 
         player1Container.append(player1NameDisplay)
         player2Container.append(player2NameDisplay)
-    })()
-})();
+    }
+    renderBoard()
+    displayPlayers()
+    return {updateResultText, renderBoard, updateDisplayedBoard, displayPlayers}
+})()
+    
+const eventHandlers = (() => {
+    board = gameBoard.getGameBoard()
 
+    const cells = Array.from(document.querySelectorAll(".cell"))
+    function cellClickHandler(e){
+        targetCol = e.target.getAttribute("data-col");
+        targetRow = e.target.getAttribute("data-row")
+
+        gameController.playATurn(targetRow, targetCol);
+        e.currentTarget.textContent = board[targetRow][targetCol];
+        displayController.updateResultText()
+    }
+    cells.forEach((cell) => cell.addEventListener("click", cellClickHandler))
+
+    const resetBtn = document.querySelector(".reset")
+    function resetClickHandler(e){
+        gameController.resetGame()
+        displayController.updateDisplayedBoard()
+        displayController.updateResultText()
+    }
+    resetBtn.addEventListener("click", resetClickHandler);
+
+})()

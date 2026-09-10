@@ -133,3 +133,18 @@ body{
 .cell:hover{
     border-radius: 40%;
 }
+.result-container button{
+    font-size: 40px;
+    width: 200px;
+    border-radius: 16px;
+    outline: none;
+    border-style: none;
+    cursor: pointer;
+    background-color: antiquewhite;
+}
+.result-container button:hover{
+    background-color: azure;
+}
+.result{
+    height: 80px;
+}
