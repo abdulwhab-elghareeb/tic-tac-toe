@@ -2,7 +2,6 @@ const GameBoard = (() =>{
     const gameBoard = [["", "", ""],
                        ["", "", ""], 
                        ["", "", ""]]
-                     // making the gameBoard's 2d array
 
     const getGameBoard = () => gameBoard;
     const getCol = (colNumber) => gameBoard.map((row,rowIdx) => gameBoard[rowIdx][colNumber]);
@@ -21,15 +20,16 @@ const createPlayer = (playerName, playerMarker) =>{
 };
 
 const GameControl = (() => {
-    // starts by creating the players
+    let GameIsEnded = false;
+
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
 
-    let activePlayer = player1; // for the first round
+    let activePlayer = player1;
 
     const switchActivePlayer = () =>{
         activePlayer = (activePlayer === player1)? player2 : player1;
-    }; // switch between players
+    };
 
     const checkForWinner = () => {
         const board = GameBoard.getGameBoard();
@@ -45,17 +45,19 @@ const GameControl = (() => {
 
            ( (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "X")) || (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "O")) ) || 
            ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
-           { 
-               // X > O means X wins
-               // X <= O means O wins (actually O cannot be bigger than X, because X always starts first)
+           {
+               GameIsEnded = true;
                 return (numberOfXs > numberOfOs)? `${player1.name} wins` : `${player2.name} wins`;
 
-           }else if(numberOfOs + numberOfXs === board.length){// if there is no empty spaces left
+           }else if(numberOfOs + numberOfXs === board.flat().length){
+                GameIsEnded = true;
                 return "Tie";
            }; 
     };
 
     const playATurn = (row, col) => {
+        if (GameIsEnded) return "The Game Ended"
+
         GameBoard.markACell(row, col, activePlayer.marker);
         console.log(GameBoard.getGameBoard());
 
