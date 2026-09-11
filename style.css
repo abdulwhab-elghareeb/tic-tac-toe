@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Sniglet:regular);
+@import url(https://fonts.googleapis.com/css?family=Sniglet:regular,400);
 /*
   Josh's Custom CSS Reset
   https://www.joshwcomeau.com/css/custom-css-reset/
@@ -32,6 +32,7 @@ input, button, textarea, select {
   font: inherit;
   color: inherit;
   background-color: inherit;
+  letter-spacing: inherit;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
@@ -66,6 +67,7 @@ body{
     background-color: var(--lavender);
     color: var(--shadow-grey);
     font-family: "Sniglet";
+    letter-spacing: 0.1rem;
 }
 
 button{
@@ -89,12 +91,11 @@ button{
 .result-container{
     grid-area: result;
     
-    width: 600px;
+    width: 630px;
     height: 200px;
     padding: 10px;
 
     background-color: var(--mustard);
-    border: 1px solid black;
     border-radius: 16px;
     
     text-align: center;
@@ -106,7 +107,7 @@ button{
 }
 
 .reset-game, .reset-round{
-    width: 250px;
+    width: 280px;
 
     font-size: 40px;
     background-color: var(--light-violet);
@@ -154,7 +155,7 @@ button{
 
 
 .player1, .player2{
-    width: 340px;
+    width: 380px;
     height: 600px;
     
     display: grid;
@@ -163,11 +164,10 @@ button{
     padding: 10px;
     gap: 10px;
     
-    border: 1px solid black;
     border-radius: 16px;
     overflow: hidden;
 
-    font-size: 40px;
+    font-size: 38px;
 }
 
 .player1{
@@ -191,7 +191,7 @@ hr{
 
 input{
     height: max-content;
-    width: 320px;
+    width: 340px;
     
     text-align: center;
     background-color: transparent;
@@ -200,7 +200,7 @@ input{
 }
 
 button:has(label){
-    padding:5px 15px;
+    padding:5px 18px;
 
     background-color: var(--lavender);
     border-radius: 16px;
