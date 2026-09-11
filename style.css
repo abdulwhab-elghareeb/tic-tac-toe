@@ -91,11 +91,11 @@ button:has(label){
 }
 
 .container{
-    padding: 100px;
+    padding: 150px;
     display: grid;
     justify-items: center;
     align-items: center;
-    grid-template-columns: 1fr 3fr 1fr;
+    grid-template-columns:  1fr  3fr 1fr; 
     grid-template-areas: 
     "result result result"
     "player1 board player2";
