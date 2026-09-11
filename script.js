@@ -22,8 +22,13 @@ const gameBoard = (() =>{
 const createPlayer = (playerName, playerMarker) =>{
     let name = playerName;
     const marker = playerMarker;
+    let score = 0;
+    getPlayerScore = () => score;
+    incrementPlayerScore = () => score++;
+    resetPlayerScore = () => score = 0;
 
-    return {name, marker};
+
+    return {name, marker, getPlayerScore, incrementPlayerScore, resetPlayerScore};
 };
 
 const gameController = (() => {
@@ -34,13 +39,10 @@ const gameController = (() => {
 
     let result = "";
     const getResult = () => result;
-
+    
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
-    const setPlayer1Name = (newName) => {player1.name = newName;};
-    const getPlayer1Name = () => player1.name;
-    const setPlayer2Name = (newName) => {player2.name = newName;};
-    const getPlayer2Name = () => player2.name;
+
 
     let activePlayer = player1;
     const switchActivePlayer = () =>{
@@ -65,8 +67,14 @@ const gameController = (() => {
            ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
            {
                gameIsEnded = true;
-                return (numberOfXs > numberOfOs)?
-                result = `${player1.name} Wins` : result = `${player2.name} Wins`;
+                if(numberOfXs > numberOfOs){
+                    player1.incrementPlayerScore()
+                    result = `${player1.name} Wins`
+
+                }else{
+                    player2.incrementPlayerScore()
+                    result = `${player2.name} Wins`;
+                }
 
            }else if(numberOfOs + numberOfXs === flatBoard.length){
                 gameIsEnded = true;
@@ -83,14 +91,21 @@ const gameController = (() => {
         }; // return here later
     };
 
-    const resetGame = () => {
+    const resetRound = () => {
         gameIsEnded = false;
         activePlayer = player1;
         gameBoard.resetBoard();
         result = "";
     }
-
-    return {playATurn, resetGame, checkForWinner, getActivePlayer, getResult, setPlayer1Name, getPlayer1Name, setPlayer2Name, getPlayer2Name, getGameState};
+    const resetGame = () =>{
+        gameIsEnded = false;
+        activePlayer = player1;
+        gameBoard.resetBoard();
+        result = "";
+        player1.resetPlayerScore()
+        player2.resetPlayerScore()
+    }
+    return {player1, player2, playATurn, resetGame, resetRound, checkForWinner, getActivePlayer, getResult, getGameState};
 })();
 
 const displayController = (() => {
@@ -118,6 +133,7 @@ const displayController = (() => {
         const cells = Array.from(document.querySelectorAll(".cell"));
         cells.forEach((cell) =>{
             cell.textContent = board[cell.getAttribute("data-row")][cell.getAttribute("data-col")];
+
             if (cell.textContent == "X"){
                 cell.classList.add("markerX");
                 cell.classList.remove("markerO");
@@ -136,13 +152,23 @@ const displayController = (() => {
         const player1Input = document.querySelector("#player1-name");
         const player2Input = document.querySelector("#player2-name");
 
-        player1Input.value = gameController.getPlayer1Name();
-        player2Input.value = gameController.getPlayer2Name();
+        player1Input.value = gameController.player1.name;
+        player2Input.value = gameController.player2.name;
     };
-    renderBoard() ;
-    updateDisplayNames();
 
-    return {updateResultText, updateDisplayedBoard, updateDisplayNames};
+    function updateDisplayScores(){
+        const player1Score = document.querySelector(".player1 > .score")
+        const player2Score = document.querySelector(".player2 > .score")
+
+        player1Score.textContent = gameController.player1.getPlayerScore();
+        player2Score.textContent = gameController.player2.getPlayerScore();
+    }
+
+    renderBoard() ;
+    updateDisplayNames()
+    updateDisplayScores();
+
+    return {updateResultText, updateDisplayedBoard, updateDisplayNames, updateDisplayScores};
 })()
     
 const eventsHandlers = (() => {
@@ -157,7 +183,9 @@ const eventsHandlers = (() => {
         gameController.playATurn(targetRow, targetCol);
         displayController.updateDisplayedBoard();
         displayController.updateResultText();
+        displayController.updateDisplayScores();
     };
+
     function cellsMouseoverEventHandler(e){
         if(gameController.getGameState() || e.target.textContent !== "" ){
             e.target.style.cursor = "not-allowed"
@@ -181,13 +209,25 @@ const eventsHandlers = (() => {
     cells.forEach((cell => cell.addEventListener("mouseout", cellsMouseoutEventHandler)))
 
 
-    const resetBtn = document.querySelector(".reset")
-    function resetClickHandler(e){
+    const resetRoundBtn = document.querySelector(".reset-round")
+    const resetGameBtn = document.querySelector(".reset-game")
+
+    function resetGameClickHandler(e){
         gameController.resetGame();
         displayController.updateDisplayedBoard();
         displayController.updateResultText();
+        displayController.updateDisplayScores();
     };
-    resetBtn.addEventListener("click", resetClickHandler);
+    
+    function resetRoundClickHandler(e){
+        gameController.resetRound();
+        displayController.updateDisplayedBoard();
+        displayController.updateResultText();
+
+    }
+    resetGameBtn.addEventListener("click", resetGameClickHandler)
+    resetRoundBtn.addEventListener("click", resetRoundClickHandler);
+
 
     const labels = Array.from(document.querySelectorAll("label"));
     const inputs = Array.from(document.querySelectorAll("input"));
@@ -200,7 +240,7 @@ const eventsHandlers = (() => {
     function inputsChangeHandler(e){// gives the input readonly and updates player name
         e.target.setAttribute("readonly", true)
 
-        gameController[`setPlayer${e.target.getAttribute("id").at(6)}Name`](e.target.value)
+        gameController[`player${e.target.getAttribute("id").at(6)}`].name = e.target.value;
         gameController.checkForWinner()
         displayController.updateResultText()
     }

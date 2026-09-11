@@ -11,13 +11,16 @@
     <div class="container">
         <div class="result-container">
             <div class="result"></div>
-            <button class="reset">Reset</button>
+            <button class="reset-game">Reset Game</button>
+            <button class="reset-round">Reset Round</button>
         </div> 
 
         <div class="player1">
             <input type="text" name="player1-name" id="player1-name" maxlength="15" minlength="2" readonly> 
             <div><button><label for="player1-name">Change name</label></button></div>
             <div class="marker markerX">X</div>
+            <hr>
+            <div class="score"></div>
         </div>
 
         <div class="game-grid"></div>
@@ -26,6 +29,8 @@
             <input type="text" name="player2-name" id="player2-name" maxlength="15" minlength="2" readonly>
             <div><button><label for="player2-name">Change name</label></button></div> 
             <div class="marker markerO">O</div>
+            <hr>
+            <div class="score"></div>
         </div>
 
     </div>
