@@ -69,16 +69,16 @@ const gameController = (() => {
                gameIsEnded = true;
                 if(numberOfXs > numberOfOs){
                     player1.incrementPlayerScore()
-                    result = `${player1.name} Wins`
+                    result = player1;
 
                 }else{
                     player2.incrementPlayerScore()
-                    result = `${player2.name} Wins`;
+                    result = player2;
                 }
 
            }else if(numberOfOs + numberOfXs === flatBoard.length){
                 gameIsEnded = true;
-                result = "Tie";
+                result = "";
            };
     };
 
@@ -112,8 +112,33 @@ const displayController = (() => {
     const board = gameBoard.getGameBoard();
 
     function updateResultText(){
-        const result = document.querySelector(".result");
-        result.textContent = gameController.getResult();
+        const gameResult = gameController.getResult()
+        const player1 = gameController.player1;
+        const player2 = gameController.player2;
+        const winnerSpan = document.querySelector(".winner")
+        const textSpan = document.querySelector(".text")
+
+        if (!(gameController.getGameState())){
+            winnerSpan.textContent = ""
+            textSpan.textContent = ""
+            return
+        }
+
+        switch(gameResult){
+            case player1:
+                winnerSpan.textContent = player1.name;
+                winnerSpan.style.color = "hsl(from var(--cinnabar) h s calc(l - 10))";
+                textSpan.textContent = " wins";
+                break;
+            case player2:
+                winnerSpan.textContent = player2.name;
+                winnerSpan.style.color = "hsl(from var(--pacific-blue) h s calc(l - 10))";
+                textSpan.textContent = " wins";
+                break;
+            default:
+                textSpan.textContent = "Tie"
+        }
+            
     };
     
     function renderBoard(){
@@ -163,7 +188,10 @@ const displayController = (() => {
         player1Score.textContent = gameController.player1.getPlayerScore();
         player2Score.textContent = gameController.player2.getPlayerScore();
     }
-
+    function displayWinnerPattern(){
+        if (gameController.getGameState()) return
+         
+    }
     renderBoard() ;
     updateDisplayNames()
     updateDisplayScores();
@@ -200,6 +228,7 @@ const eventsHandlers = (() => {
             e.target.style.background = "hsl(from var(--pacific-blue) h s calc(l + 30))";
         }
     };
+
     function cellsMouseoutEventHandler(e){
         (gameController.getActivePlayer().marker === "X")? e.target.style.background = "" : e.target.style.background = "";
     };
@@ -218,7 +247,7 @@ const eventsHandlers = (() => {
         displayController.updateResultText();
         displayController.updateDisplayScores();
     };
-    
+
     function resetRoundClickHandler(e){
         gameController.resetRound();
         displayController.updateDisplayedBoard();
@@ -236,12 +265,15 @@ const eventsHandlers = (() => {
         inputId = e.target.getAttribute("for");
         document.querySelector(`input#${inputId}`).removeAttribute("readonly")
     }
-
+    
     function inputsChangeHandler(e){// gives the input readonly and updates player name
+        if (e.target.value.length < 2){
+            e.target.value = gameController[`player${e.target.getAttribute("id").at(6)}`].name;
+            return 
+        } 
+        
         e.target.setAttribute("readonly", true)
-
         gameController[`player${e.target.getAttribute("id").at(6)}`].name = e.target.value;
-        gameController.checkForWinner()
         displayController.updateResultText()
     }
 

@@ -74,14 +74,12 @@ button{
 }
 
 .container{
-    width: 70%;
-    height: 70%;
-
     display: grid;
-    grid-template-columns: 1fr 3fr 1fr;
-    grid-template-rows: 1fr 3fr;
+    grid-template-columns: max-content max-content max-content;
+    grid-template-rows: max-content max-content;
     justify-items: center;
     align-items: center;
+    align-content: center;
     grid-template-areas: 
     "result result result"
     "player1 board player2";
@@ -93,17 +91,18 @@ button{
     
     width: 600px;
     height: 200px;
+    padding: 10px;
 
     background-color: var(--mustard);
     border: 1px solid black;
     border-radius: 16px;
     
     text-align: center;
-    font-size: 60px;
+    font-size: 50px;
 }
 
 .result{
-    height: 80px;
+    height: 100px;
 }
 
 .reset-game, .reset-round{
@@ -119,14 +118,14 @@ button{
 .reset-game{
     background-color: hsl(from var(--cinnabar) h s calc(l + 20));
 }
+
 .reset-round{
-    background-color: hsl(from var(--pacific-blue) h s calc(l + 45));
+    background-color: var(--pacific-blue);
 }
+
 .result-container button:hover{
     background-color: hsl(from var(--lavender) h s calc(l - 30));
 }
-
-
 
 .game-grid{
     grid-area: board;
@@ -180,13 +179,16 @@ button{
     grid-area: player2;
     background-color: var(--pacific-blue);
 }
+
 hr{
     width: 300px;
     border-color: var(--lavender);
 }
+
 .score {
     font-size: 60px;
 }
+
 input{
     height: max-content;
     width: 320px;
