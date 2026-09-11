@@ -39,7 +39,7 @@ const gameController = (() => {
 
     let result = "";
     const getResult = () => result;
-    
+
     const player1 = createPlayer("player1" , "X");
     const player2 = createPlayer("player2" , "O");
 
@@ -61,8 +61,7 @@ const gameController = (() => {
         // 1- if all the cells of a single row or column are "X" or "O" (horizontal or vertical line)
         // -2 if every cell on the same column as the row number contains "X" or "Y" (i.e., [1][1], [2][2], [3][3])(diagonal line)
         if ( (board.some( (row) => row.every( (cell) => cell == "X" ) || row.every( (cell) => cell == "O" ) )) ||
-           (boardCols.some( (col) => col.every( (cell) => cell == "X" ) || col.every( (cell) => cell == "O" ) ))  ||
-
+             (boardCols.some( (col) => col.every( (cell) => cell == "X" ) || col.every( (cell) => cell == "O" ) ))  ||
            ( (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "X")) || (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "O")) ) || 
            ( (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "X")) || (board.toReversed().every((row, rowIdx, reversedBoard) => reversedBoard[rowIdx][rowIdx] == "O")) ) )
            {
@@ -81,7 +80,37 @@ const gameController = (() => {
                 result = "";
            };
     };
+    const getWinningMethod = () =>{
+        if (!(result == player1 || result == player2)) return
+        let winMethod;
+        // 1- horizontal lines 
+        const boardCols = gameBoard.getAllCols()
 
+        if (board.some( (row) => row.every( (cell) => cell == "X" ) || row.every( (cell) => cell == "O" ))){
+            winMethod = "horizontal line"
+            for(const row of board){
+                if (row.every((col) => col == "X"  || row.every((col) => col == "O"))){
+                    return {winMethod, row: board.indexOf(row)}
+                }
+            }
+        // -2 vertical lines
+        }else if (boardCols.some( (col) => col.every( (cell) => cell == "X" ) || col.every( (cell) => cell == "O" ))){
+            winMethod = "vertical line"
+            for (const col of boardCols){
+                if (col.every((cell) => cell == "X"  || col.every((cell) => cell == "O"))){
+                    return {winMethod, col: boardCols.indexOf(col)}
+                }
+            }
+        }else{
+            winMethod = "diagonal line"
+            if((board.every((row, rowIdx) => board[rowIdx][rowIdx] == "X")) || (board.every((row, rowIdx) => board[rowIdx][rowIdx] == "O"))){
+                return {winMethod, col: [0, 1 ,2], row: [0, 1 ,2]};
+            }else {
+                return {winMethod, col: [2, 1, 0], row: [0, 1, 2]}
+            }
+        }
+    
+    }
     const playATurn = (row, col) => {
         if (gameIsEnded) return "The Game Ended";
         
@@ -105,7 +134,7 @@ const gameController = (() => {
         player1.resetPlayerScore()
         player2.resetPlayerScore()
     }
-    return {player1, player2, playATurn, resetGame, resetRound, checkForWinner, getActivePlayer, getResult, getGameState};
+    return {player1, player2, playATurn, resetGame, resetRound, checkForWinner, getActivePlayer, getResult, getGameState, getWinningMethod};
 })();
 
 const displayController = (() => {
@@ -182,26 +211,47 @@ const displayController = (() => {
     };
 
     function updateDisplayScores(){
+
         const player1Score = document.querySelector(".player1 > .score")
         const player2Score = document.querySelector(".player2 > .score")
 
         player1Score.textContent = gameController.player1.getPlayerScore();
         player2Score.textContent = gameController.player2.getPlayerScore();
     }
-    function displayWinnerPattern(){
-        if (gameController.getGameState()) return
-         
+    function displayWinMethod(){
+        
+        if (!gameController.getGameState()){
+            const cells = document.querySelectorAll(".cell")
+            cells.forEach((cell) => cell.classList.remove("winningX", "winningO"))
+            return
+        }
+        let cells;
+        switch (gameController.getWinningMethod().winMethod){
+            case "horizontal line" :
+                cells = Array.from(document.querySelectorAll(`[data-row = '${gameController.getWinningMethod().row}']`));
+                cells.forEach((cell) => (gameController.getResult() == gameController.player1)? cell.classList.add("winningX") : cell.classList.add("winningO"));
+                break;
+            case "vertical line" :
+                cells = Array.from(document.querySelectorAll(`[data-col = '${gameController.getWinningMethod().col}']`));
+                cells.forEach((cell) => (gameController.getResult() == gameController.player1)? cell.classList.add("winningX") : cell.classList.add("winningO"));
+                break;
+
+            default :
+                const cell1 = document.querySelector(`[data-row = '${gameController.getWinningMethod().row[0]}'][data-col = '${gameController.getWinningMethod().col[0]}']`);
+                const cell2 = document.querySelector(`[data-row = '${gameController.getWinningMethod().row[1]}'][data-col = '${gameController.getWinningMethod().col[1]}']`);
+                const cell3 = document.querySelector(`[data-row = '${gameController.getWinningMethod().row[2]}'][data-col = '${gameController.getWinningMethod().col[2]}']`);
+                [cell1, cell2, cell3].forEach((cell) => (gameController.getResult() == gameController.player1)? cell.classList.add("winningX") : cell.classList.add("winningO"));
+            }
     }
     renderBoard() ;
     updateDisplayNames()
     updateDisplayScores();
 
-    return {updateResultText, updateDisplayedBoard, updateDisplayNames, updateDisplayScores};
+    return {updateResultText, updateDisplayedBoard, updateDisplayNames, updateDisplayScores,displayWinnerPattern: displayWinMethod};
 })()
     
 const eventsHandlers = (() => {
     board = gameBoard.getGameBoard();
-
 
     const cells = Array.from(document.querySelectorAll(".cell"));
     function cellClickHandler(e){
@@ -212,6 +262,7 @@ const eventsHandlers = (() => {
         displayController.updateDisplayedBoard();
         displayController.updateResultText();
         displayController.updateDisplayScores();
+        displayController.displayWinnerPattern()
     };
 
     function cellsMouseoverEventHandler(e){
@@ -246,13 +297,14 @@ const eventsHandlers = (() => {
         displayController.updateDisplayedBoard();
         displayController.updateResultText();
         displayController.updateDisplayScores();
+        displayController.displayWinnerPattern()
     };
 
     function resetRoundClickHandler(e){
         gameController.resetRound();
         displayController.updateDisplayedBoard();
         displayController.updateResultText();
-
+        displayController.displayWinnerPattern()
     }
     resetGameBtn.addEventListener("click", resetGameClickHandler)
     resetRoundBtn.addEventListener("click", resetRoundClickHandler);

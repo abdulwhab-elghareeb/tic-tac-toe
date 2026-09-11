@@ -229,3 +229,11 @@ button:has(label):hover{
 .markerO{
     color: hsl(from var(--pacific-blue) h s calc(l - 20));
 }
+
+.winningX{
+    background-color: var(--cinnabar);
+}
+
+.winningO{
+    background-color: var(--pacific-blue);
+}
