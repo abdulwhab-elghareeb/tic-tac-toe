@@ -74,6 +74,7 @@ button{
     cursor: pointer;
     transition: all 0.5s;
 }
+
 .result-container,
 .player1, .player2,
 .reset-game, .reset-round,
@@ -90,9 +91,11 @@ button:has(label){
 }
 
 .container{
+    padding: 100px;
     display: grid;
     justify-items: center;
     align-items: center;
+    grid-template-columns: 1fr 3fr 1fr;
     grid-template-areas: 
     "result result result"
     "player1 board player2";
