@@ -245,16 +245,33 @@ const displayController = (() => {
             };
     };
 
+    function updateCurrentPlayer(){
+        const player1Container = document.querySelector(".player1")
+        const player2Container = document.querySelector(".player2")
+        
+        if (gameController.getRoundEnded()) return
+
+        if(gameController.getActivePlayer() == gameController.player1){
+            player1Container.classList.add("focus")
+            player2Container.classList.remove("focus")
+        }else{
+            player2Container.classList.add("focus")
+            player1Container.classList.remove("focus")
+        }
+    }
+
     function updateAll(){
         updateDisplayBoard();
         updateResultText();
         updateDisplayScores();
+        updateCurrentPlayer()
         displayWinningMethod();
     };
 
     renderBoard();
     updateDisplayNames();
     updateDisplayScores();
+    updateCurrentPlayer();
 
     return {updateAll};
 })();
@@ -281,7 +298,7 @@ const eventsHandler = (() => {
 
         }else{
             e.target.style.cursor = "pointer";
-            e.target.style.background = "hsl(from var(--pacific-blue) h s calc(l + 30))";
+            e.target.style.background = "hsl(from var(--pacific-blue) h s calc(l + 40))";
         };
     };
     cells.forEach((cell => cell.addEventListener("mouseover", cellsMouseoverEventHandler)));
@@ -305,7 +322,7 @@ const eventsHandler = (() => {
         displayController.updateAll();
     };
     resetRoundBtn.addEventListener("click", resetRoundClickHandler);
-    
+
 
     // changing player name
     const labels = Array.from(document.querySelectorAll("label"));

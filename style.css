@@ -74,30 +74,38 @@ button{
     cursor: pointer;
     transition: all 0.5s;
 }
+.result-container,
+.player1, .player2,
+.reset-game, .reset-round,
+button:has(label){
+    padding: 10px;
+    border-radius: 16px;
+}
+
+.cell,
+.reset-game, .reset-round,
+button:has(label){
+    border-style: none;
+    outline: none;
+}
 
 .container{
     display: grid;
-    grid-template-columns: max-content max-content max-content;
-    grid-template-rows: max-content max-content;
     justify-items: center;
     align-items: center;
-    align-content: center;
     grid-template-areas: 
     "result result result"
     "player1 board player2";
     gap: 20px;
-
 }
+
 .result-container{
     grid-area: result;
-    
+
     width: 630px;
     height: 200px;
-    padding: 10px;
-
-    background-color: var(--mustard);
-    border-radius: 16px;
     
+    background-color: var(--mustard);
     text-align: center;
     font-size: 50px;
 }
@@ -107,25 +115,21 @@ button{
 }
 
 .reset-game, .reset-round{
-    width: 280px;
+    width: 275px;
 
     font-size: 40px;
-    background-color: var(--light-violet);
-    
-    border-radius: 16px;
-    border-style: none;
-    outline: none;
 }
+
 .reset-game{
-    background-color: hsl(from var(--cinnabar) h s calc(l + 20));
+    background-color: hsl(304 27 78)
 }
 
 .reset-round{
-    background-color: var(--pacific-blue);
+    background-color: hsl(196, 40%, 67%)
 }
 
 .result-container button:hover{
-    background-color: hsl(from var(--lavender) h s calc(l - 30));
+    background-color: hsl(from var(--mustard) h s calc(l + 10));
 }
 
 .game-grid{
@@ -133,24 +137,19 @@ button{
     display: grid;
     grid-template-columns: repeat(3, 200px);
     grid-template-rows: repeat(3, 200px);
-    
     gap: 2px;
+
     background-color: var(--shadow-grey);
 }
 
 .cell{
-    height: 200px;
-    width: 200px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    
     background-color: var(--lavender);
-    font-size: 70px;
-    border-style: none;
-    outline: none;
+    font-size: 75px;
 }
 
 
@@ -161,12 +160,8 @@ button{
     display: grid;
     justify-items: center;
     align-content: start;
-    padding: 10px;
     gap: 10px;
     
-    border-radius: 16px;
-    overflow: hidden;
-
     font-size: 38px;
 }
 
@@ -200,21 +195,16 @@ input{
 }
 
 button:has(label){
-    padding:5px 18px;
-
+    padding:3px 18px;
     background-color: var(--lavender);
-    border-radius: 16px;
-    border-style: none;
+}
 
-    transition: all 0.5s;
+button:has(label):hover{
+    background-color: hsl(from var(--light-violet) h s calc(l + 5));
 }
 
 label{
     cursor: pointer;
-}
-
-button:has(label):hover{
-    background-color: hsl(from var(--lavender) h s calc(l - 20));
 }
 
 .marker{
@@ -231,9 +221,27 @@ button:has(label):hover{
 }
 
 .winningX{
-    background-color: var(--cinnabar);
+    background-color: hsl(from var(--cinnabar) h s calc(l + 20));
 }
 
 .winningO{
-    background-color: var(--pacific-blue);
+    background-color: hsl(from var(--pacific-blue) h s calc(l + 40));
+}
+
+.focus{
+    outline: solid 9px var(--light-violet);
+    transition: outline 0.5s;
+    position:relative;
+}
+
+.focus::after{
+    content: "";
+    width: 200px;
+    height: 6px;
+
+    position: absolute;
+    top: 0;
+
+    background-color: var(--light-violet);
+    border-radius: 16px;
 }
