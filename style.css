@@ -30,6 +30,8 @@ img, picture, video, canvas, svg {
 
 input, button, textarea, select {
   font: inherit;
+  color: inherit;
+  background-color: inherit;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
@@ -46,71 +48,86 @@ h1, h2, h3, h4, h5, h6 {
 #root, #__next {
   isolation: isolate;
 }
+:root{
+    --shadow-grey: hsla(0, 0%, 15%, 1);
+    --mustard: hsla(45, 99%, 70%, 1);
+    --pacific-blue: hsla(188, 100%, 36%, 1);
+    --cinnabar: hsla(5, 68%, 55%, 1);
+    --lavender: hsla(273, 13%, 87%, 1);
+    --light-violet: hsl(271, 76%, 73%);
+}
 body{
-    font-family: "Sniglet";
     height: 100vh;
+    
     display: flex;
     justify-content: center;
     align-items: center;
+    
+    background-color: var(--lavender);
+    color: var(--shadow-grey);
+    font-family: "Sniglet";
 }
+
+button{
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
 .container{
     width: 70%;
     height: 70%;
+
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
     grid-template-rows: 1fr 3fr;
-
     justify-items: center;
     align-items: center;
-
     grid-template-areas: 
     "result result result"
     "player1 board player2";
     gap: 20px;
+
 }
 .result-container{
     grid-area: result;
-    height: 200px;
+    
     width: 600px;
-    text-align: center;
-    font-size: 70px;
-    background-color: aliceblue;
+    height: 200px;
+
+    background-color: var(--mustard);
     border: 1px solid black;
     border-radius: 16px;
+    
+    text-align: center;
+    font-size: 60px;
 }
+
+.result{
+    height: 80px;
+}
+
+.result-container button{
+    width: 200px;
+
+    font-size: 40px;
+    background-color: var(--light-violet);
+    
+    border-radius: 16px;
+    border-style: none;
+    outline: none;
+}
+
+.result-container button:hover{
+    background-color: hsl(from var(--light-violet) h s calc(l - 30));
+}
+
+
+
 .game-grid{
     grid-area: board;
     display: grid;
     grid-template-columns: repeat(3, 200px);
     grid-template-rows: repeat(3, 200px);
-}
-
-.player1{
-    display: grid;
-    padding: 10px;
-    gap: 10px;
-    justify-items: center;
-    grid-area: player1;
-    height: 600px;
-    width: 340px;
-    border: 1px solid black;
-    font-size: 40px;
-    border-radius: 16px;
-    background-color: hsl(0, 98%, 82%);
-}
-
-.player2{
-    display: grid;
-    padding: 10px;
-    gap: 10px;
-    justify-items: center;
-    grid-area: player2;
-    height: 600px;
-    width: 340px;
-    border: 1px solid black;
-    border-radius: 16px;
-    font-size: 40px;
-    background-color: hsl(60, 88%, 91%);
 }
 
 .cell{
@@ -121,30 +138,76 @@ body{
     align-items: center;
     justify-content: center;
 
-    background-color: antiquewhite;
-    border: 1px solid black;
-
     font-size: 70px;
-
-    cursor: pointer;
+    border: 1px solid black;
     outline: none;
+}
+
+
+.player1, .player2{
+    width: 340px;
+    height: 600px;
+    
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    padding: 10px;
+    gap: 10px;
+    
+    border: 1px solid black;
+    border-radius: 16px;
+    overflow: hidden;
+
+    font-size: 40px;
+}
+
+.player1{
+    grid-area: player1;
+    background-color: var(--cinnabar)
+}
+
+.player2{
+    grid-area: player2;
+    background-color: var(--pacific-blue);
+}
+
+input{
+    height: max-content;
+    width: 320px;
+    
+    text-align: center;
+    background-color: transparent;
+    outline: none;
+    border: none; 
+}
+
+button:has(label){
+    padding:5px 15px;
+
+    background-color: var(--lavender);
+    border-radius: 16px;
+    border-style: none;
+
     transition: all 0.5s;
 }
-.cell:hover{
-    border-radius: 40%;
-}
-.result-container button{
-    font-size: 40px;
-    width: 200px;
-    border-radius: 16px;
-    outline: none;
-    border-style: none;
+
+label{
     cursor: pointer;
-    background-color: antiquewhite;
 }
-.result-container button:hover{
-    background-color: azure;
+
+button:has(label):hover{
+    background-color: hsl(from var(--lavender) h s calc(l - 20));
 }
-.result{
-    height: 80px;
+
+.marker{
+    font-size: 100px;
+    margin-top: 20px;
+}
+
+.markerX{
+    color: hsl(from var(--cinnabar) h s calc(l - 20));
+}
+
+.markerO{
+    color: hsl(from var(--pacific-blue) h s calc(l - 20));
 }
